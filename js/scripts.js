@@ -15,31 +15,64 @@ TravelBook.prototype.assignId = function() {
 
 TravelBook.prototype.findPlace = function(id) {
   for (let i=0; i< this.places.length; i++) {
-    if (this.contacts[i]) {
-      if (this.contacts[i].id == id) {
-        return this.contacts [i];
+    if (this.places[i]) {
+      if (this.places[i].id == id) {
+        return this.places [i];
       }
     }
   };
   return false;
 }
 
-function Place(location, landmarks, time, notes) {
+function Place(location, landmark, time, notes) {
   this.location = location;
-  this.landmarks = landmarks;
+  this.landmark = landmark;
   this.time = time;
   this.notes = notes;
 }
 
 let travelBook = new TravelBook();
-let place1 = new Place("San Francisco", "Golden Gate Bridge", 1993, "Good Crab");
-let place2 = new Place("Egypt", "Pyramids", 2012, "Good kushari")
-let place3 = new Place("Seattle", "Space Needle", 2020, "Good Clam Chowder")
 
-for (i=1; i<4; i++) {
-  travelBook.addPlace("place"+i);
+function displayPlaceDetails(travelBookToDisplay) {
+  let placesList = $("ul#places");
+  let htmlForPlaceInfo = "";
+  travelBookToDisplay.places.forEach(function(place) {
+    htmlForPlaceInfo += "<li id=" + place.id + ">" + place.location + "</li>";
+  });
+  placesList.html(htmlForPlaceInfo);
+}
+
+function showPlace(placeId) {
+  const place = travelBook.findPlace(placeId);
+  $("#show-place").show();
+  $(".location").html(place.location);
+  $(".landmark").html(place.landmark);
+  $(".time").html(place.time);
+  $(".notes").html(place.notes);
+}
+
+function attachPlaceListeners() {
+  $("ul#places").on("click", "li", function() {
+    showPlace(this.id);
+  });
 }
 
 $(document).ready(function() {
-
+  attachPlaceListeners();
+  $("form#new-place").submit(function(event) {
+    event.preventDefault();
+    const inputLocation = $("input#location").val();
+    const inputLandmark = $("input#landmark").val();
+    const inputTime = $("input#time").val();
+    const inputNotes = $("input#notes").val();
+    
+    $("input#location").val("");
+    $("input#landmark").val("");
+    $("input#time").val("");
+    $("input#notes").val("");
+    
+    let newPlace = new Place(inputLocation, inputLandmark, inputTime, inputNotes);
+    travelBook.addPlace(newPlace);
+    displayPlaceDetails(travelBook);
+  })
 });
